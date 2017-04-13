@@ -1,0 +1,94 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Тест квиклука</title>
+		 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+		 <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+     <script src="res.json" type="text/javascript"></script>
+     <script src="res1.json" type="text/javascript"></script>
+	</head>
+	<body>
+		<div id="mapid" style="width: 100%; height: 100%;"></div>
+		<script>
+
+			var map = L.map('mapid').setView([63.238891, 27.023405], 13);
+
+			var tile = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+				maxZoom: 18,
+				attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+					'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+					'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+				id: 'mapbox.streets'
+			}).addTo(map);
+
+		var	bounds = new L.LatLngBounds(
+			new L.LatLng(63.238891, 27.023405),
+			new L.LatLng(69.062299, 41.959297));
+		// map.fitBounds(bounds);
+
+		var overlay = new L.ImageOverlay("MM2.MSU102.102.101.png", bounds, {
+			opacity: 1,
+			interactive: true,
+			attribution: '&copy; АО "Российские космические системы"'
+		});
+		map.addLayer(overlay);
+
+		var	bounds1 = new L.LatLngBounds(
+			new L.LatLng(54.996375, 33.408221),
+			new L.LatLng(60.171762, 43.619288));
+		map.fitBounds(bounds1);
+
+		var overlay1 = new L.ImageOverlay("MM2.MSU101.102.101.png", bounds1, {
+			opacity: 1,
+			interactive: true,
+			attribution: '&copy; АО "Российские космические системы"'
+		});
+		map.addLayer(overlay1);
+
+
+
+/*                var polygon = L.polygon([
+                    [63.238891, 27.023405],
+                    [63.238891, 41.959297],
+                    [69.062299, 41.959297],
+                    [69.062299, 27.023405]
+                ]).addTo(map);
+*/
+
+                var geoj = L.layerGroup()
+                 geojson.result.map( function(obj) {
+                  L.geoJSON(obj.bounding_shape, {
+                    coordsToLatLng: function(coords) {
+                      return new L.latLng(coords[1], coords[0], coords[2]);
+                    }
+                  }).addTo(geoj);
+                });
+
+								var geoj1 = L.layerGroup()
+                 geojson1.result.map( function(obj) {
+									if(obj.scene_id == 'MM2.MSU101.102.101.0100590211006') {
+	                  L.geoJSON(obj.bounding_shape, {
+	                    coordsToLatLng: function(coords) {
+	                      return new L.latLng(coords[1], coords[0], coords[2]);
+	                    }
+	                  }).addTo(geoj1);
+									}
+                });
+
+
+
+          var baseMaps = {
+             "Карта": tile,
+          };
+
+          var overlayMaps = {
+            "Первая картинка": overlay,
+            "Первый res": geoj,
+            "Вторая картинка": overlay1,
+            "Второй res": geoj1,
+          };
+          L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+     </script>
+	</body>
+</html>
